@@ -1,0 +1,21 @@
+{
+  "name": "ml-learn",
+  "version": "1.0.0",
+  "description": "Python 机器学习学习软件 - 研究生版 (Node.js CLI)",
+  "type": "module",
+  "main": "cli.js",
+  "bin": {
+    "ml-learn": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "cli-highlight": "^2.1.11",
+    "cli-table3": "^0.6.3",
+    "inquirer": "^9.2.0",
+    "marked": "^9.0.0",
+    "marked-terminal": "^6.0.0"
+  }
+}
