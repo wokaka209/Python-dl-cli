@@ -1,4 +1,7 @@
 import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 const SAFE_MODULES = {
   numpy: 'import numpy as np',
@@ -26,14 +29,16 @@ export function runCode(code, timeout = 30) {
     }
 
     const fullCode = preamble + code;
+
+    // Write code to temp file to avoid shell escaping issues
+    const tmpFile = path.join(os.tmpdir(), `ml_learn_${Date.now()}.py`);
+    fs.writeFileSync(tmpFile, fullCode, 'utf-8');
+
     let stdout = '';
     let stderr = '';
     let killed = false;
 
-    const proc = spawn('python', ['-c', fullCode], {
-      shell: true,
-      timeout: timeout * 1000,
-    });
+    const proc = spawn('python', [tmpFile]);
 
     proc.stdout.on('data', (data) => { stdout += data.toString(); });
     proc.stderr.on('data', (data) => { stderr += data.toString(); });
@@ -45,6 +50,8 @@ export function runCode(code, timeout = 30) {
 
     proc.on('close', (code) => {
       clearTimeout(timer);
+      // Clean up temp file
+      try { fs.unlinkSync(tmpFile); } catch {}
       if (killed) {
         stderr += `\n[超时] 代码执行超过 ${timeout} 秒`;
       }
@@ -57,6 +64,7 @@ export function runCode(code, timeout = 30) {
 
     proc.on('error', (err) => {
       clearTimeout(timer);
+      try { fs.unlinkSync(tmpFile); } catch {}
       resolve({
         stdout: '',
         stderr: err.message,

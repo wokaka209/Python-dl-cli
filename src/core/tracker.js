@@ -103,7 +103,6 @@ export function addCertificate(certId, certName) {
   const data = loadProgress();
   const existingIds = (data.certificates || []).map(c => c.id);
   if (!existingIds.includes(certId)) {
-    data.certificates = data.certificates || [];
     data.certificates.push({ id: certId, name: certName, date: new Date().toISOString() });
   }
   saveProgress(data);

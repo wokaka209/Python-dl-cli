@@ -21,11 +21,12 @@ export const LESSONS = {
 
 Scikit-learn 是 Python 中最流行的机器学习库，提供了分类、回归、聚类、模型评估等完整工具链。
 `,
-        code: `# 环境检查
+        code: `# 导入机器学习核心库
 import sklearn
 import numpy as np
 import pandas as pd
 
+# 验证各库版本，确保环境正确安装
 print(f"Scikit-learn 版本: {sklearn.__version__}")
 print(f"NumPy 版本: {np.__version__}")
 print(f"Pandas 版本: {pd.__version__}")
@@ -53,11 +54,13 @@ print("\\n环境配置完成！可以开始学习机器学习了。")`,
 
 > "Applied machine learning is basically feature engineering." — Andrew Ng
 `,
-        code: `import numpy as np
+        code: `# 导入预处理工具
+import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.impute import SimpleImputer
 
+# 构造含缺失值和分类变量的示例数据
 data = pd.DataFrame({
     '年龄': [25, 30, np.nan, 35, 28],
     '收入': [5000, 8000, 6000, np.nan, 7000],
@@ -68,16 +71,19 @@ data = pd.DataFrame({
 print("原始数据:")
 print(data)
 
+# 用均值填充缺失值（适合数值型特征）
 imputer = SimpleImputer(strategy='mean')
 data[['年龄', '收入']] = imputer.fit_transform(data[['年龄', '收入']])
 print("\\n填充缺失值后:")
 print(data)
 
+# 标签编码：将分类文本转为数值（0, 1, 2...）
 le = LabelEncoder()
 data['购买编码'] = le.fit_transform(data['购买'])
 print("\\n标签编码后:")
 print(data)
 
+# 标准化：消除量纲差异，使均值为0、标准差为1
 scaler = StandardScaler()
 scaled = scaler.fit_transform(data[['年龄', '收入']])
 print(f"\\n标准化后:\\n{pd.DataFrame(scaled, columns=['年龄', '收入'])}")`,
@@ -104,7 +110,8 @@ print(f"\\n标准化后:\\n{pd.DataFrame(scaled, columns=['年龄', '收入'])}"
 - **召回率**: 真正为正类中被正确预测的比例
 - **F1分数**: 精确率和召回率的调和平均
 `,
-        code: `from sklearn.datasets import load_iris
+        code: `# 导入分类算法和评估工具
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -112,12 +119,15 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 
+# 加载经典鸢尾花数据集（150样本，4特征，3类别）
 iris = load_iris()
 X, y = iris.data, iris.target
 print(f"数据集: {X.shape}, 类别: {list(iris.target_names)}")
 
+# 按7:3划分训练集和测试集，random_state保证可复现
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+# 用字典组织多种分类器，便于统一训练和对比
 classifiers = {
     '逻辑回归': LogisticRegression(max_iter=200, random_state=42),
     '决策树': DecisionTreeClassifier(random_state=42),
@@ -125,11 +135,13 @@ classifiers = {
     'SVM': SVC(kernel='rbf', random_state=42)
 }
 
+# 训练并评估每个分类器
 for name, clf in classifiers.items():
     clf.fit(X_train, y_train)
     acc = accuracy_score(y_test, clf.predict(X_test))
     print(f"{name}: 准确率 = {acc:.2%}")
 
+# 打印随机森林的详细分类报告（精确率、召回率、F1）
 print("\\n随机森林详细报告:")
 print(classification_report(y_test, classifiers['随机森林'].predict(X_test),
                           target_names=iris.target_names))`,
@@ -156,23 +168,27 @@ print(classification_report(y_test, classifiers['随机森林'].predict(X_test),
 - **MAE**: 平均绝对误差
 - **R²**: 决定系数，模型解释的方差比例
 `,
-        code: `import numpy as np
+        code: `# 导入回归算法和评估指标
+import numpy as np
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
+# 生成模拟回归数据集（500样本，5特征，加入噪声模拟真实数据）
 X, y = make_regression(n_samples=500, n_features=5, noise=20, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+# 组织多种回归模型：从简单线性到集成方法
 regressors = {
     '线性回归': LinearRegression(),
-    '岭回归': Ridge(alpha=1.0),
-    'Lasso': Lasso(alpha=0.1),
+    '岭回归': Ridge(alpha=1.0),       # L2正则化，防止过拟合
+    'Lasso': Lasso(alpha=0.1),        # L1正则化，可自动特征选择
     '随机森林': RandomForestRegressor(n_estimators=100, random_state=42)
 }
 
+# 训练各模型并用RMSE、MAE、R²三个指标对比性能
 print("回归模型对比:")
 print("-".repeat(60))
 for name, reg in regressors.items():
@@ -207,12 +223,14 @@ for name, reg in regressors.items():
 张量是PyTorch的核心数据结构，类似NumPy的ndarray。
 支持自动求导 (Autograd)，是训练神经网络的基础。
 `,
-        code: `import torch
+        code: `# 导入PyTorch，检查GPU是否可用
+import torch
 import numpy as np
 
 print(f"PyTorch版本: {torch.__version__}")
 print(f"CUDA可用: {torch.cuda.is_available()}")
 
+# 创建张量的几种常见方式：从列表、全零、随机
 t1 = torch.tensor([1, 2, 3, 4, 5])
 t2 = torch.zeros(3, 4)
 t3 = torch.randn(2, 3)
@@ -222,11 +240,13 @@ print(f"形状: {t1.shape}, 类型: {t1.dtype}")
 print(f"\\n全零矩阵:\\n{t2}")
 print(f"\\n随机矩阵:\\n{t3}")
 
+# 张量运算：逐元素加法和向量点积
 a = torch.tensor([1.0, 2.0, 3.0])
 b = torch.tensor([4.0, 5.0, 6.0])
 print(f"\\n加法: {a + b}")
 print(f"点积: {torch.dot(a, b)}")
 
+# 自动求导：计算 y = x³ + 2x² + x 在 x=2 处的导数
 x = torch.tensor(2.0, requires_grad=True)
 y = x ** 3 + 2 * x ** 2 + x
 y.backward()
@@ -256,13 +276,15 @@ print(f"\\nx={x.item()}, y={y.item()}, dy/dx={x.grad.item()}")`,
 - **CrossEntropy Loss**: 分类任务损失函数
 - **Adam**: 自适应学习率优化器
 `,
-        code: `import torch
+        code: `# 导入PyTorch神经网络模块和sklearn数据工具
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+# 定义三层全连接网络：4输入 → 64 → 32 → 3输出
 class IrisNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -274,18 +296,22 @@ class IrisNet(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+# 加载数据并标准化（神经网络对输入尺度敏感）
 iris = load_iris()
 X = StandardScaler().fit_transform(iris.data)
 y = iris.target
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
+# 将numpy数组转为PyTorch张量
 X_train_t, y_train_t = torch.FloatTensor(X_train), torch.LongTensor(y_train)
 X_test_t, y_test_t = torch.FloatTensor(X_test), torch.LongTensor(y_test)
 
+# 初始化模型、损失函数和优化器
 model = IrisNet()
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
+# 训练循环：前向传播 → 计算损失 → 反向传播 → 更新参数
 print("训练神经网络...")
 for epoch in range(100):
     optimizer.zero_grad()
@@ -321,9 +347,11 @@ for epoch in range(100):
         code: `import torch
 import torch.nn as nn
 
+# 定义简单CNN：两层卷积提取特征 + 全连接层分类
 class SimpleCNN(nn.Module):
     def __init__(self, num_classes=10):
         super().__init__()
+        # 特征提取部分：卷积 → ReLU → 池化，逐层增加通道数
         self.features = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=3, padding=1),
             nn.ReLU(),
@@ -332,6 +360,7 @@ class SimpleCNN(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(2),
         )
+        # 分类部分：展平后接全连接层映射到类别数
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(64 * 7 * 7, 128),
@@ -342,13 +371,16 @@ class SimpleCNN(nn.Module):
     def forward(self, x):
         return self.classifier(self.features(x))
 
+# 实例化模型并打印结构
 model = SimpleCNN(num_classes=10)
 print("模型结构:")
 print(model)
 
+# 统计模型总参数量
 total = sum(p.numel() for p in model.parameters())
 print(f"\\n总参数量: {total:,}")
 
+# 用模拟输入验证数据维度流转（1通道，28x28图像）
 dummy = torch.randn(1, 1, 28, 28)
 output = model(dummy)
 print(f"输入: {dummy.shape} -> 输出: {output.shape}")`,

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { showMenu, showInfo, showSuccess } from '../ui/display.js';
-import { getProgressSummary, setUsername, getUsername } from '../core/tracker.js';
+import { setUsername, getUsername } from '../core/tracker.js';
 import { incrementPlaygroundRuns } from '../core/tracker.js';
 import { checkCertificates } from '../core/certificate.js';
 import { showLessonMenu } from './lesson-menu.js';
